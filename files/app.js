@@ -43,12 +43,14 @@ udpPort.on("ready", function () {
 });
 
 udpPort.on("message", function (oscMessage) {
-    if(oscMessage.address == '/play') {
-        omxplayer.newSource(oscMessage.args[0], 'hdmi', false, 100);
+    if(oscMessage.address.startsWith('/play')) {
+        var moviePath = '/data/movies/' + oscMessage.address.split('/').pop() + '.mp4';
+        omxplayer.newSource(moviePath, 'hdmi', false, 100);
     }
 
     if(oscMessage.address == '/loop') {
-        omxplayer.newSource(oscMessage.args[0], 'hdmi', true, 100);
+        var movieIndex = '/data/movies/' + oscMessage.address.split('/').pop() + '.mp4';
+        omxplayer.newSource(movieIndex, 'hdmi', true, 100);
     }
 
     if(oscMessage.address == '/pause' && omxplayer.running) {
