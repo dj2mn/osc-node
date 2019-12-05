@@ -1,0 +1,11 @@
+---
+- name: Install Node.js, NPM and dependencies
+  package:
+    name: "nodejs, omxplayer"
+    state: present
+
+- name: Install node packages
+  npm:
+    name: "forever forever-service"
+    state: latest
+    global: yes

@@ -26,8 +26,8 @@ var getIPAddresses = function () {
 };
 
 var udpPort = new osc.UDPPort({
-    localAddress: "0.0.0.0",
-    localPort: 57121
+    localAddress: "{{ osc_listen_address }}",
+    localPort: '{{ osc_listen_port }}'
 });
 
 udpPort.on("ready", function () {
@@ -44,12 +44,12 @@ udpPort.on("ready", function () {
 
 udpPort.on("message", function (oscMessage) {
     if(oscMessage.address.startsWith('/play')) {
-        var moviePath = '/data/movies/' + oscMessage.address.split('/').pop() + '.mp4';
+        var moviePath = '{{ media_path }}' + oscMessage.address.split('/').pop() + '.mp4';
         omxplayer.newSource(moviePath, 'hdmi', false, 100);
     }
 
     if(oscMessage.address == '/loop') {
-        var movieIndex = '/data/movies/' + oscMessage.address.split('/').pop() + '.mp4';
+        var movieIndex = '{{ media_path }}' + oscMessage.address.split('/').pop() + '.mp4';
         omxplayer.newSource(movieIndex, 'hdmi', true, 100);
     }
 

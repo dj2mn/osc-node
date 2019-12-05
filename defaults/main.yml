@@ -1,0 +1,4 @@
+---
+media_path: "/media/movies"
+osc_listen_port: 57121
+osc_listen_address: "0.0.0.0"
