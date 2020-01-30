@@ -41,7 +41,7 @@ udpPort.on("ready", function () {
 
     // Make the screen blank
    // cmd.run('/opt/vc/bin/tvservice -p');
-   omxplayer.newSource('{{ media_path }}{{ default_movie }}', '{{ output }}', '{{ loop_mode }}', '{{ volume }}' );
+   //omxplayer.newSource('{{ media_path }}{{ default_movie }}', '{{ output }}', '{{ loop_mode }}', '{{ volume }}' );
 });
 
 udpPort.on("message", function (oscMessage) {
@@ -50,13 +50,19 @@ udpPort.on("message", function (oscMessage) {
 
         var moviePath = '{{ media_path }}' + oscMessage.args[0] + '.mp4';
         if (moviePath != oldPath ) {
-          console.log("about to play " + moviePath);
+          console.log("telling omxplayer to play " + moviePath);
           //this quit is a hack to force new source to start playing immediately 
           // otherwise omxplayer apparently waits until current movie is finished
-          omxplayer.quit();
-          //setTimeout(function(){
- 	      omxplayer.newSource(moviePath, '{{ output }}', '{{ loop_mode }}', '{{ volume }}');
-          //}, 500);
+          // or not at all if it's looping.
+          
+          if( omxplayer.running ) {
+            console.log("telling omxplayer to quit");
+            omxplayer.quit();
+          }
+          
+          setTimeout(function(){
+ 	        omxplayer.newSource(moviePath, '{{ output }}', '{{ loop_mode }}', '{{ volume }}', 'true');
+          }, 500);
           oldPath = moviePath     
         }   
     }
