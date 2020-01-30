@@ -1,11 +1,42 @@
 ---
-- name: Install Node.js, NPM and dependencies
+- name: add nodejs v9 repo
+  shell: "curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -"
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install Node.js and dependencies
   package:
-    name: "nodejs, omxplayer"
+    name: "nodejs=9.11.2-1nodesource1, git, omxplayer"
     state: present
 
 - name: Install node packages
   npm:
-    name: "forever forever-service"
+    name: "{{ item }}"
     state: latest
     global: yes
+  with_items:
+    - forever
+    - forever-service
+
+- name: get osc-node source
+  become: false
+  git:
+    repo: https://github.com/marsvaardig/osc-node.git
+    dest: /home/pi/osc-node
+    clone: yes
+    force: yes
+
+- name: get npm packages for the app
+  become: false
+  npm:
+    path: /home/pi/osc-node
+
+- name: replace app.js with our version
+  template:
+    src: app.js.j2
+    dest: /home/pi/osc-node/app.js
+    owner: pi
+    group: pi
+    mode: 0644
+  notify: "restart osc-node"
+

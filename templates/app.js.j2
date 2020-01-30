@@ -1,7 +1,8 @@
 var osc = require("osc"),
     cmd = require('node-cmd'),
     Omx = require('node-omxplayer'),
-    omxplayer = Omx();
+    omxplayer = Omx(),
+    oldPath = '{{ media_path }}{{ default_movie }}';
 
 /****************
  * OSC Over UDP *
@@ -39,19 +40,31 @@ udpPort.on("ready", function () {
     });
 
     // Make the screen blank
-    cmd.run('/opt/vc/bin/tvservice -p');
+   // cmd.run('/opt/vc/bin/tvservice -p');
+   omxplayer.newSource('{{ media_path }}{{ default_movie }}', '{{ output }}', '{{ loop_mode }}', '{{ volume }}' );
 });
 
 udpPort.on("message", function (oscMessage) {
-    if(oscMessage.address.startsWith('/play')) {
-        var moviePath = '{{ media_path }}' + oscMessage.address.split('/').pop() + '.mp4';
-        omxplayer.newSource(moviePath, 'hdmi', false, 100);
+    console.log("received OSC message " + oscMessage.address + " arg[0] " + oscMessage.args[0]);
+    if(oscMessage.address == '/play' ) {
+
+        var moviePath = '{{ media_path }}' + oscMessage.args[0] + '.mp4';
+        if (moviePath != oldPath ) {
+          console.log("about to play " + moviePath);
+          //this quit is a hack to force new source to start playing immediately 
+          // otherwise omxplayer apparently waits until current movie is finished
+          omxplayer.quit();
+          //setTimeout(function(){
+ 	      omxplayer.newSource(moviePath, '{{ output }}', '{{ loop_mode }}', '{{ volume }}');
+          //}, 500);
+          oldPath = moviePath     
+        }   
     }
 
-    if(oscMessage.address == '/loop') {
-        var movieIndex = '{{ media_path }}' + oscMessage.address.split('/').pop() + '.mp4';
-        omxplayer.newSource(movieIndex, 'hdmi', true, 100);
-    }
+//    if(oscMessage.address == '/loop') {
+//        var movieIndex = '{{ media_path }}' + oscMessage.args[0] + '.mp4';
+//        omxplayer.newSource(movieIndex, '{{ output }}', '{{ loop_mode }}', '{{ volume }}');
+//    }
 
     if(oscMessage.address == '/pause' && omxplayer.running) {
         omxplayer.pause();

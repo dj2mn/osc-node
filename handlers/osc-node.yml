@@ -1,0 +1,13 @@
+---
+- name: stop osc-node
+  service:
+    name: osc-node
+    state: stopped
+
+- name: kill any leftover omxplayer processes
+  command: "sudo pkill omxplayer"
+
+- name: start osc-node
+  service:
+    name: osc-node
+    state: started

@@ -1,4 +1,8 @@
 ---
-media_path: "/media/movies"
+media_path: "/home/pi/Videos/"
+default_movie: "default.mp4"
 osc_listen_port: 57121
 osc_listen_address: "0.0.0.0"
+loop_mode: 'true'
+output: 'hdmi'
+volume: '0'

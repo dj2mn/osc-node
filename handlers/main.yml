@@ -1,0 +1,6 @@
+---
+# handlers file for osc-node
+- name: restart osc-node
+  service:
+    name: osc-node
+    state: restarted
